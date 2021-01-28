@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        </style>       
+        
+        <script src="home/lib.js"></script>
+        <script>
+            var context;
+            var sek = 0;
+            var min = 0;
+            var std = 0;
+    
+            var Timer = function()
+            {
+                sek++
+                if(sek == 60)
+                {
+                    min++;
+                    sek = 0;
+                }
+                if(min == 60)
+                {
+                    std++;
+                    min = 0;
+                }
+                if(std == 12)
+                {
+                    std = 0;
+                }
+
+                lib.clearCanvas(context, 0, 0, 800, 600);
+                lib.drawArc(context, 400, 300, 200, 0, 2 * Math.PI);
+                lib.drawLine(context, 400, 300, 400 + 195 * Math.sin(Math.PI * sek / 30), 300 - 195 * Math.cos(Math.PI * sek / 30));
+                lib.drawLine(context, 400, 300, 400 + 180 * Math.sin(Math.PI * min / 30), 300 - 180 * Math.cos(Math.PI * min / 30));
+                lib.drawLine(context, 400, 300, 400 + 165 * Math.sin(Math.PI * std / 6), 300 - 165 * Math.cos(Math.PI * std / 6));
+
+                timeText();
+            }
+
+            window.addEventListener('load', function(evt)
+            {
+                context = lib.getContext(document.getElementById("cvs"));
+                
+                lib.drawArc(context, 400, 300, 200, 0, 2 * Math.PI); 
+                lib.drawLine(context, 400, 300, 400, 300 - 195); //105
+                lib.drawLine(context, 400, 300, 400, 300 - 180); //120
+                lib.drawLine(context, 400, 300, 400, 300 - 165); //135
+
+                timeText();
+
+                setInterval(Timer, 1000);
+            });
+
+            var timeText = function()
+            {
+                lib.writeText(context, '','12', 400, 125);
+                lib.writeText(context, '', '3', 580, 300);
+                lib.writeText(context, '', '6', 400, 475);
+                lib.writeText(context, '', '9', 220, 300);
+            }
+
+        </script>
+    </head>
+<body>
+    <canvas  id="cvs" width="800" height="600", style="border: 3px solid black" style="font-size: 20;"></canvas>
+</body>
+
+</html>
