@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            #cvs
+            {
+                position: absolute;
+                top: 90px;
+            }
+
+            p
+            {
+                font-size: large;
+            }
+
+            #raw
+            {
+                font-size: small;
+            }
+        </style>       
+        
+        <script src="lib.js"></script>
+        <script>
+            var context;
+            var sek = 0;
+            var min = 0;
+            var std = 0;
+            var xhr;
+
+            // var Timer = function()
+            // {
+            //     sek++
+            //     if(sek == 60)
+            //     {
+            //         min++;
+            //         sek = 0;
+            //     }
+            //     if(min == 60)
+            //     {
+            //         std++;
+            //         min = 0;
+            //     }
+            //     if(std == 12)
+            //     {
+            //         std = 0;
+            //     }  
+
+            //     lib.clearCanvas(context, 0, 0, 800, 600);
+            //     lib.drawArc(context, 400, 300, 200, 0, 2 * Math.PI);
+            //     lib.drawLine(context, 400, 300, 400 + 195 * Math.sin(Math.PI * sek / 30), 300 - 195 * Math.cos(Math.PI * sek / 30));
+            //     lib.drawLine(context, 400, 300, 400 + 180 * Math.sin(Math.PI * min / 30), 300 - 180 * Math.cos(Math.PI * min / 30));
+            //     lib.drawLine(context, 400, 300, 400 + 165 * Math.sin(Math.PI * std / 6), 300 - 165 * Math.cos(Math.PI * std / 6));
+            //     timeText();
+            // }           
+
+            var success = function(data)
+            {
+                document.getElementById("raw").innerHTML = data;
+
+                    const json = JSON.parse(data);
+
+                    var year = json['year'];
+                    var month = json['month'];
+                    var day = json['day'];
+                    var hour = json['hour'];
+                    var min = json['min'];
+                    var sec = json['sec'];  
+                    
+                    lib.clearCanvas(context, 0, 0, 800, 600);
+                    timeText();
+                    lib.writeText(context, '16px Arial', String(year) + '-' + String(month) + '-' + String(day) + ' ' + String(hour) + ':' + String(min) + ':' + String(sec), 10, 20);
+
+                    lib.drawArc(context, 400, 300, 200, 0, 2 * Math.PI); 
+
+                    lib.drawLine(context, 400, 300, 400 + 195 * Math.sin(Math.PI * parseInt(sec, 10) / 30), 300 - 195 * Math.cos(Math.PI * parseInt(sec, 10) / 30));
+                    lib.drawLine(context, 400, 300, 400 + 165 * Math.sin(Math.PI * parseInt(min, 10) / 30), 300 - 165 * Math.cos(Math.PI * parseInt(min, 10) / 30));
+                    lib.drawLine(context, 400, 300, 400 + 135 * Math.sin(Math.PI * parseInt(hour, 10) / 6), 300 - 115 * Math.cos(Math.PI * parseInt(hour, 10) / 6));
+                }
+
+            var error = function(data)
+            {
+                raw.innerHTML = 'Ajax error: ' + data;
+            }
+
+            window.onload = function() 
+            {                   
+                context = lib.getContext(document.getElementById("cvs"));
+                
+                xhr = lib.ajaxCreateXhr(success, error);
+                
+                // lib.drawArc(context, 400, 300, 200, 0, 2 * Math.PI); 
+                // lib.drawLine(context, 400, 300, 400, 300 - 195); //105
+                // lib.drawLine(context, 400, 300, 400, 300 - 180); //120
+                // lib.drawLine(context, 400, 300, 400, 300 - 165); //135
+
+                //timeText();
+
+                //setInterval(Timer, 1000);
+                setInterval(function()
+                {
+                    lib.ajaxSend(xhr, "http://localhost/Canvas%20Clock/serverTime_JSON.php", "GET");
+                }, 500);
+            }
+
+            var timeText = function()
+            {
+                lib.writeText(context, '16px Arial','12', 390, 125);
+                lib.writeText(context, '16px Arial', '3', 575, 305);
+                lib.writeText(context, '16px Arial', '6', 395, 485);
+                lib.writeText(context, '16px Arial', '9', 220, 305);
+
+                lib.drawLine(context, 400, 95, 400, 105);
+                lib.drawLine(context, 400, 495, 400, 505);
+                lib.drawLine(context, 195, 300, 205, 300);
+                lib.drawLine(context, 595, 300, 605, 300);
+            }
+
+        </script>
+    </head>
+<body>
+    <p>Raw response: </p>
+    <p id="raw"></p>
+    <canvas  id="cvs"  width="800" height="600", style="border: 3px solid black"></canvas>
+</body>
+
+</html>
